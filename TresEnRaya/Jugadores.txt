@@ -7,3 +7,156 @@ Guillermo
 Aitor
 Hodei
 Ekaitz
+
+import java.util.Scanner;
+import java.util.Random;
+
+public class ExamenDAM {
+    
+    // EJERCICIO 1: Tabla de multiplicar con validación
+    public static void ejercicio1() {
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.print("Introduce un número: ");
+        int numero = sc.nextInt();
+        
+        // Array para guardar las respuestas del usuario
+        int[] respuestas = new int[10];
+        
+        // PASO 1: Mostrar la tabla vacía y recoger respuestas
+        System.out.println("\nIntroduce el resultado para cada multiplicación:");
+        for (int i = 1; i <= 10; i++) {
+            System.out.print(numero + " x " + i + " = ");
+            respuestas[i - 1] = sc.nextInt();
+        }
+        
+        // PASO 2: Corregir y mostrar resultados
+        System.out.println("\n--- CORRECCIÓN ---");
+        int errores = 0;
+        
+        for (int i = 1; i <= 10; i++) {
+            int resultadoCorrecto = numero * i;
+            int respuestaUsuario = respuestas[i - 1];
+            
+            System.out.print(numero + " x " + i + " = " + respuestaUsuario + "\t");
+            
+            // Validamos la respuesta
+            if (respuestaUsuario == resultadoCorrecto) {
+                System.out.println("B"); // Bien
+            } else {
+                System.out.println("M"); // Mal
+                errores++;
+            }
+        }
+        
+        System.out.println("\nHas cometido " + errores + " errores.");
+    }
+    
+    // EJERCICIO 2: Máximo número de veces consecutivas
+    
+    // Función para llenar el array con números aleatorios entre 1 y 4
+    public static void llenarArray(int[] array) {
+        Random rand = new Random();
+        for (int i = 0; i < array.length; i++) {
+            array[i] = rand.nextInt(4) + 1; // Genera números entre 1 y 4
+        }
+    }
+    
+    // Función para mostrar el array
+    public static void mostrarArray(int[] array) {
+        System.out.print("Array: [");
+        for (int i = 0; i < array.length; i++) {
+            System.out.print(array[i]);
+            if (i < array.length - 1) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("]");
+    }
+    
+    // Función que calcula el máximo número de veces consecutivas
+    public static int maxVeces(int[] array, int numero) {
+        // Si el número no está en el array, devolvemos 0
+        boolean encontrado = false;
+        for (int valor : array) {
+            if (valor == numero) {
+                encontrado = true;
+                break;
+            }
+        }
+        if (!encontrado) {
+            return 0;
+        }
+        
+        int maxConsecutivas = 0;
+        int consecutivasActuales = 0;
+        
+        // Recorremos el array contando las apariciones consecutivas
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == numero) {
+                consecutivasActuales++;
+                // Actualizamos el máximo si encontramos más consecutivas
+                if (consecutivasActuales > maxConsecutivas) {
+                    maxConsecutivas = consecutivasActuales;
+                }
+            } else {
+                // Reiniciamos el contador cuando encontramos otro número
+                consecutivasActuales = 0;
+            }
+        }
+        
+        return maxConsecutivas;
+    }
+    
+    public static void ejercicio2() {
+        Scanner sc = new Scanner(System.in);
+        
+        // Creamos un array de 20 elementos
+        int[] numeros = new int[20];
+        
+        // Llenamos el array con números aleatorios entre 1 y 4
+        llenarArray(numeros);
+        
+        // Mostramos el array
+        mostrarArray(numeros);
+        
+        // Pedimos al usuario un número
+        System.out.print("\nIntroduce un número: ");
+        int numeroBuscado = sc.nextInt();
+        
+        // Llamamos a la función maxVeces
+        int resultado = maxVeces(numeros, numeroBuscado);
+        
+        // Mostramos el resultado
+        System.out.println("\nEl número " + numeroBuscado + 
+                         " aparece como máximo " + resultado + 
+                         " veces consecutivas en el array.");
+    }
+    
+    // Método principal para ejecutar los ejercicios
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.println("=== EXAMEN DAM - PROGRAMACIÓN ===\n");
+        System.out.println("Selecciona el ejercicio a ejecutar:");
+        System.out.println("1. Tabla de multiplicar");
+        System.out.println("2. Máximo veces consecutivas");
+        System.out.print("\nOpción: ");
+        
+        int opcion = sc.nextInt();
+        System.out.println();
+        
+        switch (opcion) {
+            case 1:
+                ejercicio1();
+                break;
+            case 2:
+                ejercicio2();
+                break;
+            default:
+                System.out.println("Opción no válida");
+        }
+        
+        sc.close();
+    }
+}
