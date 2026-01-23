@@ -9,5 +9,6 @@
 	<classpathentry kind="src" path="modelo"/>
 	<classpathentry kind="src" path="vista"/>
 	<classpathentry kind="src" path="controlador"/>
+	<classpathentry kind="src" path="recursos"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
