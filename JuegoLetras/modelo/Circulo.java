@@ -5,7 +5,7 @@ public class Circulo extends Cuadrado {
 	//DATOS
 	private int posXinic, posYinic;
 	private Cuadrado pareja;
-	
+
 	//CONSTRUCTORES
 	public Circulo() {
 		super();
@@ -20,20 +20,20 @@ public class Circulo extends Cuadrado {
 		posYinic=posY;
 		pareja=null;
 	}
-	
+
 	//MÉTODOS (FUNCIONES)
-		public void dibujar(Graphics g) {
-			//Relleno
-			g.setColor(getColor());
-			g.fillOval(getPosX(), getPosY(), getAncho(), getAlto());
-			
-			//Borde
-			g.setColor(Color.BLACK);
-			g.drawOval(getPosX(), getPosY(), getAncho(), getAlto());
-			
-			//Letra
-			dibujarLetra(g);
-		}
+	public void dibujar(Graphics g) {
+		//Relleno
+		g.setColor(getColor());
+		g.fillOval(getPosX(), getPosY(), getAncho(), getAlto());
+
+		//Borde
+		g.setColor(Color.BLACK);
+		g.drawOval(getPosX(), getPosY(), getAncho(), getAlto());
+
+		//Letra
+		dibujarLetra(g);
+	}
 
 	//GETTERS/SETTERS
 	public int getPosXinic() {

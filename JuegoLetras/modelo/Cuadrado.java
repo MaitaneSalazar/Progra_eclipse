@@ -13,13 +13,15 @@ public class Cuadrado {
 	private int ancho, alto;
 	private String letra;
 	private int posX, posY;
-	
+
 	private int velocidad;
 	private int dirH; //-1 izquierda, 1 derecha, 0 no se mueve en horizontal
 	private int dirV; //-1 arriba, 1 abajo, 0 no se mueve en vertical
-	
+
+	private boolean emparejado;
+
 	private AreaJuego areaJuego;
-	
+
 	//CONSTRUCTORES
 	public Cuadrado() {
 		color=Color.CYAN;
@@ -31,8 +33,9 @@ public class Cuadrado {
 		velocidad=5;
 		dirH=-1;
 		dirV=1;
+		emparejado = false;
 	}
-	
+
 	public Cuadrado(Color color, int ancho, int alto, String letra, int posX, int posY, int velocidad, int dirH, int dirV) {
 		super();
 		this.color = color;
@@ -44,32 +47,33 @@ public class Cuadrado {
 		this.velocidad = velocidad;
 		this.dirH = dirH;
 		this.dirV = dirV;
+		emparejado = false;
 	}
-	
+
 	//MÉTODOS (FUNCIONES)
 	public void dibujar(Graphics g) {
 		//Relleno
 		g.setColor(color);
 		g.fillRect(posX, posY, ancho, alto);
-		
+
 		//Borde
 		g.setColor(Color.BLACK);
 		g.drawRect(posX, posY, ancho, alto);
-		
+
 		//Letra
 		dibujarLetra(g);
 	}
-	
+
 	public void dibujarLetra(Graphics g) {
 		FontMetrics fm;
 		Rectangle2D rect;
-		
+
 		g.setFont(new Font("Arial", Font.PLAIN, 20));
 		fm=g.getFontMetrics();
 		rect=fm.getStringBounds(letra, g);
 		g.drawString(letra, posX+ancho/2-(int)(rect.getWidth()/2), posY+alto/2+(int)(rect.getHeight()/2)-2);
 	}
-	
+
 	public void mover()
 	{
 		posX = posX + velocidad * dirH;
@@ -81,9 +85,9 @@ public class Cuadrado {
 		if(posY<=0 || posY >= areaJuego.getHeight()-alto) {
 			dirV=-dirV;
 		}
-			
+
 	}
-	
+
 	//GETTERS/SETTERS
 	public Color getColor() {
 		return color;
@@ -167,11 +171,19 @@ public class Cuadrado {
 
 	public Rectangle getRect() {
 		Rectangle r;
-		
+
 		r= new Rectangle(posX, posY, ancho, alto);
-		
+
 		return r;
-		
+
 	}
-	
+
+	public boolean isEmparejado() {
+		return emparejado;
+	}
+
+	public void setEmparejado(boolean emparejado) {
+		this.emparejado = emparejado;
+	}
+
 }
