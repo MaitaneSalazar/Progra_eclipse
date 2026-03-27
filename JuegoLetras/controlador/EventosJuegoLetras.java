@@ -12,6 +12,7 @@ public class EventosJuegoLetras {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(juegoLetras.getBtnStart().getText().equals("Empezar")) {
+					
 					//Desactivar boton empezar
 					juegoLetras.getBtnStart().setEnabled(false);
 					//Desactivar radiobuttons de nivel
@@ -27,6 +28,9 @@ public class EventosJuegoLetras {
 				} else {
 					juegoLetras.getAreaJuego().comprobar();
 					juegoLetras.getBtnStart().setText("Empezar");
+					juegoLetras.getRdbtnFacil().setEnabled(true);
+					juegoLetras.getRdbtnMedio().setEnabled(true);
+					juegoLetras.getRdbtnDificil().setEnabled(true);
 				}
 
 				//Repaint
