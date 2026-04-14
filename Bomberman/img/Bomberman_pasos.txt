@@ -1,0 +1,490 @@
+================================================================
+  BOMBERMAN - PASOS PARA HACERLO
+  Lo que ya tengo:
+    - Bomberman.java        OK (no tocar)
+    - AreaJuego.java        tiene fondo y eventosAreaJuego
+    - EventosAreaJuego.java tiene estadoTeclas[5]
+    - Todas las imagenes en img/
+    - Xagu.java             la logica del mapa en fichero ya la se
+================================================================
+
+
+================================================================
+  PASO 1  -  AMPLIAR AreaJuego.java
+================================================================
+
+  1.1  Anadir constante del tamano de celda
+       public static final int TAM_CELDA = 60;
+
+  1.2  Declarar el array del mapa
+       private int[][] mapa;
+
+  1.3  Declarar las imagenes del mapa
+       private Image imgMuro;
+       private Image imgBloque;
+
+  1.4  Declarar el jugador y los ArrayLists
+       private Jugador jugador;
+       private ArrayList<Enemigo>   arrayEnemigos;
+       private ArrayList<Bomba>     arrayBombas;
+       private ArrayList<Explosion> arrayExplosiones;
+
+       --> para que funcione ArrayList necesitas:
+           import java.util.ArrayList;
+
+  1.5  En el constructor cargar las imagenes del mapa
+       imgMuro   = new ImageIcon(getClass().getResource("Obstaculo.png")).getImage();
+       imgBloque = new ImageIcon(getClass().getResource("Extra.png")).getImage();
+       --> igual que ya cargo fondo con ImageIcon
+
+  1.6  En el constructor inicializar los ArrayLists
+       arrayEnemigos   = new ArrayList<Enemigo>();
+       arrayBombas     = new ArrayList<Bomba>();
+       arrayExplosiones= new ArrayList<Explosion>();
+
+  1.7  En el constructor inicializar el mapa con valores de prueba
+       mapa = new int[][] {
+           {1,1,1,1,1,1,1,1,1,1},
+           {1,0,0,2,0,0,2,0,0,1},
+           {1,0,1,0,1,0,1,0,1,1},
+           {1,2,0,0,0,2,0,0,2,1},
+           {1,0,1,0,1,0,1,0,0,1},
+           {1,0,0,2,0,0,0,2,0,1},
+           {1,1,1,1,1,1,1,1,1,1}
+       };
+       --> un 1 es muro, un 2 es bloque destructible, un 0 es libre
+
+  1.8  Anadir metodo dibujarMapa(Graphics g)
+       private void dibujarMapa(Graphics g) {
+           for (int fila = 0; fila < mapa.length; fila++) {
+               for (int col = 0; col < mapa[0].length; col++) {
+                   int x = col  * TAM_CELDA;
+                   int y = fila * TAM_CELDA;
+                   if (mapa[fila][col] == 1)
+                       g.drawImage(imgMuro, x, y, TAM_CELDA, TAM_CELDA, this);
+                   if (mapa[fila][col] == 2)
+                       g.drawImage(imgBloque, x, y, TAM_CELDA, TAM_CELDA, this);
+               }
+           }
+       }
+       --> el doble for es IGUAL que en Xagu (crearLabels y cargarMapa)
+       --> la diferencia es que aqui calculo x e y con TAM_CELDA
+           porque Graphics no tiene GridLayout automatico
+
+  1.9  Modificar paint() para que llame a dibujarMapa
+       public void paint(Graphics g) {
+           super.paint(g);
+           g.drawImage(fondo, 0, 0, getWidth(), getHeight(), null);
+           dibujarMapa(g);
+           // aqui llamare al resto cuando esten creados:
+           // jugador.dibujar(g)
+           // for bombas -> bomba.dibujar(g)
+           // for explosiones -> explosion.dibujar(g)
+           // for enemigos -> enemigo.dibujar(g)
+       }
+
+  1.10 Anadir getters para que EventosAreaJuego pueda acceder
+       public Jugador getJugador()                      { return jugador; }
+       public ArrayList<Bomba> getArrayBombas()         { return arrayBombas; }
+       public ArrayList<Enemigo> getArrayEnemigos()     { return arrayEnemigos; }
+       public ArrayList<Explosion> getArrayExplosiones(){ return arrayExplosiones; }
+       public int[][] getMapa()                         { return mapa; }
+
+  PRUEBA: ejecutar -> tiene que verse el fondo con los muros
+          y bloques pintados encima en su sitio
+
+
+================================================================
+  PASO 2  -  CREAR Jugador.java
+================================================================
+
+  Copio Caballo.java como base y hago estos cambios:
+
+  2.1  Quitar todo lo del salto
+       Borrar: impulso, dirV, estadoAnterior, metodo saltar()
+       Borrar el estado SALTANDO y todo lo relacionado
+
+  2.2  Anadir vidas
+       private int vidas = 3;
+
+  2.3  Cambiar el constructor
+       Recibe (AreaJuego areaJuego)
+       Poner posX y posY en una celda libre del mapa
+       posX = 1 * AreaJuego.TAM_CELDA;
+       posY = 1 * AreaJuego.TAM_CELDA;
+       Cargar las imagenes del jugador con ImageIcon
+
+  2.4  Modificar mover() para comprobar el mapa
+       En vez de comprobar solo los limites del panel,
+       antes de mover calculo la celda destino:
+           int nuevaX = posX + velocidad * dirH;
+           int nuevaY = posY + velocidad * dirV;
+           int fila = nuevaY / AreaJuego.TAM_CELDA;
+           int col  = nuevaX / AreaJuego.TAM_CELDA;
+           if (areaJuego.getMapa()[fila][col] == 0) {
+               posX = nuevaX;
+               posY = nuevaY;
+           }
+       --> division entera: 145/60 = 2  me da el indice de celda
+
+  2.5  Anadir perderVida()
+       public void perderVida() {
+           vidas--;
+           // si vidas == 0 hacer algo (println de momento)
+       }
+
+  2.6  getRect() igual que en Caballo
+       return new Rectangle(posX, posY, ancho, alto);
+
+  2.7  dibujar(Graphics g) igual que en Caballo
+       g.drawImage(imagenes[imgActual], posX, posY, ancho, alto, areaJuego);
+
+  2.8  Volver a AreaJuego y en el constructor crear el jugador
+       jugador = new Jugador(this);
+  
+  2.9  Descomentar jugador.dibujar(g) en paint()
+
+  PRUEBA: ejecutar -> tiene que verse el jugador parado en el mapa
+
+
+================================================================
+  PASO 3  -  COMPLETAR EventosAreaJuego.java
+             (el Timer reloj y el KeyListener)
+================================================================
+
+  3.1  Importar lo necesario
+       import java.awt.event.ActionEvent;
+       import java.awt.event.ActionListener;
+       import java.awt.event.KeyEvent;
+       import java.awt.event.KeyListener;
+       import javax.swing.Timer;
+
+  3.2  Declarar el Timer
+       private Timer reloj;
+
+  3.3  En el constructor crear el Timer (despues de inicializar estadoTeclas)
+       reloj = new Timer(40, new ActionListener() {
+           public void actionPerformed(ActionEvent e) {
+               areaJuego.getJugador().mover(estadoTeclas);
+               areaJuego.repaint();
+           }
+       });
+       reloj.start();
+       --> de momento solo mueve el jugador, luego anado mas cosas
+
+  3.4  En el constructor anadir el KeyListener
+       areaJuego.addKeyListener(new KeyListener() {
+           public void keyTyped(KeyEvent e) {}
+
+           public void keyPressed(KeyEvent e) {
+               if (e.getKeyCode() == KeyEvent.VK_LEFT  || e.getKeyCode() == KeyEvent.VK_A)
+                   estadoTeclas[0] = 1;
+               if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
+                   estadoTeclas[1] = 1;
+               if (e.getKeyCode() == KeyEvent.VK_UP    || e.getKeyCode() == KeyEvent.VK_W)
+                   estadoTeclas[2] = 1;
+               if (e.getKeyCode() == KeyEvent.VK_DOWN  || e.getKeyCode() == KeyEvent.VK_S)
+                   estadoTeclas[3] = 1;
+               if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                   estadoTeclas[4] = 1;
+           }
+
+           public void keyReleased(KeyEvent e) {
+               if (e.getKeyCode() == KeyEvent.VK_LEFT  || e.getKeyCode() == KeyEvent.VK_A)
+                   estadoTeclas[0] = 0;
+               if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
+                   estadoTeclas[1] = 0;
+               if (e.getKeyCode() == KeyEvent.VK_UP    || e.getKeyCode() == KeyEvent.VK_W)
+                   estadoTeclas[2] = 0;
+               if (e.getKeyCode() == KeyEvent.VK_DOWN  || e.getKeyCode() == KeyEvent.VK_S)
+                   estadoTeclas[3] = 0;
+               if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                   estadoTeclas[4] = 0;
+           }
+       });
+
+  PRUEBA: ejecutar -> el jugador se mueve con las flechas
+          y no atraviesa los muros del mapa
+
+
+================================================================
+  PASO 4  -  CREAR Enemigo.java
+================================================================
+
+  Copio Jinete.java como base y hago estos cambios:
+
+  4.1  Cambiar el constructor para recibir posicion fija
+       public Enemigo(int posX, int posY, AreaJuego areaJuego)
+       --> ya no es aleatoria, la recibo como parametro
+
+  4.2  Cargar imagenes Enemy0.png, Enemy1.png, Enemy2.png
+       igual que ImageIcon en Caballo/Jinete
+
+  4.3  Cambiar caer() por mover()
+       En vez de solo caer hacia abajo, elige una de 4 direcciones
+       con Random (0=arriba, 1=dcha, 2=abajo, 3=izq)
+       Antes de mover comprueba que mapa[fila][col] == 0
+       igual que hice en Jugador.mover()
+
+  4.4  Animacion con delayAnim igual que Caballo
+       delayAnim++ cada vez que se mueve
+       if (delayAnim == 4) { imgActual = (imgActual+1) % 3; delayAnim=0; }
+
+  4.5  run() igual que en Jinete
+       while (estaVivo) {
+           mover();
+           repaint en AreaJuego si hace falta
+           Thread.sleep(300);   <- mas lento que 40ms, es su propio ritmo
+       }
+
+  4.6  getRect() y dibujar(g) iguales que en Jinete
+
+  4.7  Volver a AreaJuego y crear los enemigos en el constructor
+       Ponerlos en celdas que sean 0 en el mapa
+       arrayEnemigos.add(new Enemigo(5*TAM_CELDA, 1*TAM_CELDA, this));
+       arrayEnemigos.add(new Enemigo(1*TAM_CELDA, 3*TAM_CELDA, this));
+       for (Enemigo e : arrayEnemigos) { e.start(); }
+
+  4.8  Descomentar el for de enemigos en paint()
+
+  PRUEBA: ejecutar -> los enemigos aparecen desde el principio
+          y se mueven solos sin atravesar muros
+
+
+================================================================
+  PASO 5  -  CREAR Bomba.java
+================================================================
+
+  5.1  Atributos
+       private int posX, posY;
+       private int ancho = AreaJuego.TAM_CELDA;
+       private int alto  = AreaJuego.TAM_CELDA;
+       private int timer = 3000;          <- 3 segundos
+       private boolean explotada = false;
+       private Image[] imagenes;          <- Bomba0, 1, 2
+       private int imgActual = 0;
+       private int delayAnim = 0;
+       private AreaJuego areaJuego;
+
+  5.2  Constructor recibe posicion y areaJuego
+       public Bomba(int posX, int posY, AreaJuego areaJuego)
+       Cargar Bomba0.png, Bomba1.png, Bomba2.png con ImageIcon
+
+  5.3  Metodo tick()
+       public void tick() {
+           timer -= 40;
+           delayAnim++;
+           if (delayAnim == 6) {
+               imgActual = (imgActual + 1) % 3;
+               delayAnim = 0;
+           }
+           if (timer <= 0) explotada = true;
+       }
+
+  5.4  Metodo haExplotado()
+       public boolean haExplotado() { return explotada; }
+
+  5.5  dibujar(g) y getRect() igual que siempre
+
+  5.6  En EventosAreaJuego dentro de keyPressed para SPACE
+       if (estadoTeclas[4] == 1) {
+           int bx = areaJuego.getJugador().getPosX();
+           int by = areaJuego.getJugador().getPosY();
+           areaJuego.getArrayBombas().add(new Bomba(bx, by, areaJuego));
+       }
+
+  5.7  En el Timer reloj anadir el for de bombas
+       (DESPUES de mover el jugador, ANTES de repaint)
+
+       for (int i = areaJuego.getArrayBombas().size()-1; i >= 0; i--) {
+           areaJuego.getArrayBombas().get(i).tick();
+           if (areaJuego.getArrayBombas().get(i).haExplotado()) {
+               // de momento solo borrarla, luego pondre la Explosion
+               areaJuego.getArrayBombas().remove(i);
+           }
+       }
+       --> for inverso igual que con los jinetes en MiJuego
+
+  5.8  Descomentar el for de bombas en paint()
+
+  PRUEBA: ejecutar -> al pulsar SPACE aparece una bomba animada
+          que desaparece a los 3 segundos
+
+
+================================================================
+  PASO 6  -  CREAR Explosion.java
+================================================================
+
+  6.1  Atributos
+       private int posX, posY;        <- celda central en pixeles
+       private int radio = 2;         <- cuantas celdas se expande
+       private int timer = 800;
+       private boolean terminada = false;
+       private Image[] animExplosion; <- Explosion0 a Explosion8
+       private Image fuegoCentro;
+       private Image fuegoH, fuegoHFin;
+       private Image fuegoV, fuegoVFin;
+       private int imgActual = 0;
+       private int delayAnim = 0;
+       private AreaJuego areaJuego;
+
+  6.2  Constructor recibe posicion y areaJuego
+       Cargar todas las imagenes con ImageIcon:
+         animExplosion = new Image[9];
+         for (int i=0; i<9; i++)
+             animExplosion[i] = new ImageIcon(getClass().getResource("Explosion"+i+".png")).getImage();
+         fuegoCentro = new ImageIcon(getClass().getResource("FuegoCentro.png")).getImage();
+         fuegoH      = new ImageIcon(getClass().getResource("FuegoHorizontal.png")).getImage();
+         fuegoHFin   = new ImageIcon(getClass().getResource("FuegoHorizontalFin.png")).getImage();
+         fuegoV      = new ImageIcon(getClass().getResource("FuegoVertical.png")).getImage();
+         fuegoVFin   = new ImageIcon(getClass().getResource("FuegoVerticalFin.png")).getImage();
+
+  6.3  Metodo tick()
+       timer -= 40;
+       delayAnim++;
+       if (delayAnim == 2) {
+           imgActual++;
+           if (imgActual >= 9) imgActual = 0;
+           delayAnim = 0;
+       }
+       if (timer <= 0) terminada = true;
+
+  6.4  Metodo haTerminado()
+       public boolean haTerminado() { return terminada; }
+
+  6.5  Metodo dibujar(Graphics g)
+       int T = AreaJuego.TAM_CELDA;
+       int celdaFila = posY / T;
+       int celdaCol  = posX / T;
+       int[][] mapa  = areaJuego.getMapa();
+
+       // centro
+       g.drawImage(animExplosion[imgActual], posX, posY, T, T, areaJuego);
+
+       // rayo hacia la DERECHA
+       for (int i = 1; i <= radio; i++) {
+           int col = celdaCol + i;
+           if (mapa[celdaFila][col] == 1) break;              // muro, para
+           if (i == radio || mapa[celdaFila][col+1] == 1)
+               g.drawImage(fuegoHFin, col*T, posY, T, T, areaJuego);
+           else
+               g.drawImage(fuegoH,    col*T, posY, T, T, areaJuego);
+           if (mapa[celdaFila][col] == 2) {
+               mapa[celdaFila][col] = 0;                      // destruye bloque
+               break;
+           }
+       }
+       // repetir lo mismo para IZQUIERDA, ARRIBA, ABAJO
+       // cambiando col-i o fila-i y usando fuegoV/fuegoVFin para vertical
+
+  6.6  En el Timer reloj, donde borraba la bomba al explotar,
+       crear la Explosion y anadirla al array:
+       if (areaJuego.getArrayBombas().get(i).haExplotado()) {
+           int bx = areaJuego.getArrayBombas().get(i).getPosX();
+           int by = areaJuego.getArrayBombas().get(i).getPosY();
+           areaJuego.getArrayExplosiones().add(new Explosion(bx, by, areaJuego));
+           areaJuego.getArrayBombas().remove(i);
+       }
+
+  6.7  En el Timer reloj anadir el for de explosiones
+       (despues del for de bombas)
+       for (int i = areaJuego.getArrayExplosiones().size()-1; i >= 0; i--) {
+           areaJuego.getArrayExplosiones().get(i).tick();
+           if (areaJuego.getArrayExplosiones().get(i).haTerminado()) {
+               areaJuego.getArrayExplosiones().remove(i);
+           }
+       }
+
+  6.8  Descomentar el for de explosiones en paint()
+
+  PRUEBA: ejecutar -> la bomba explota y aparece la cruz de fuego
+          los bloques destructibles desaparecen al tocarlos
+
+
+================================================================
+  PASO 7  -  COLISIONES en EventosAreaJuego
+================================================================
+
+  Anadir dentro del Timer reloj, despues de los for de tick,
+  antes del repaint(). FOR INVERSO siempre para poder remove(i).
+
+  7.1  Jugador con enemigo
+       for (int i = areaJuego.getArrayEnemigos().size()-1; i >= 0; i--) {
+           Enemigo en = areaJuego.getArrayEnemigos().get(i);
+           if (areaJuego.getJugador().getRect().intersects(en.getRect())) {
+               areaJuego.getJugador().perderVida();
+               en.setEstaVivo(false);
+               areaJuego.getArrayEnemigos().remove(i);
+           }
+       }
+       --> getRect().intersects() igual que ya lo usaba en MiJuego
+
+  7.2  Jugador con explosion
+       for (Explosion ex : areaJuego.getArrayExplosiones()) {
+           if (areaJuego.getJugador().getRect().intersects(ex.getRect())) {
+               areaJuego.getJugador().perderVida();
+           }
+       }
+
+  7.3  Enemigo con explosion
+       for (int i = areaJuego.getArrayEnemigos().size()-1; i >= 0; i--) {
+           Enemigo en = areaJuego.getArrayEnemigos().get(i);
+           for (Explosion ex : areaJuego.getArrayExplosiones()) {
+               if (en.getRect().intersects(ex.getRect())) {
+                   en.setEstaVivo(false);
+                   areaJuego.getArrayEnemigos().remove(i);
+                   break;
+               }
+           }
+       }
+
+  PRUEBA: tocar un enemigo -> jugador pierde vida (println)
+          explosion toca enemigo -> enemigo desaparece
+          explosion toca jugador -> jugador pierde vida
+
+
+================================================================
+  RESUMEN DEL ORDEN FINAL DEL Timer reloj (40ms)
+================================================================
+
+  1. jugador.mover(estadoTeclas)
+  2. for inverso arrayBombas     -> tick(), si explota crear Explosion
+  3. for inverso arrayExplosiones -> tick(), si termina remove
+  4. for inverso colision jugador-enemigo
+  5. for colision jugador-explosion
+  6. for inverso colision enemigo-explosion
+  7. areaJuego.repaint()         <- SIEMPRE el ultimo
+
+
+================================================================
+  RESUMEN DEL ORDEN DE paint() en AreaJuego
+================================================================
+
+  1. super.paint(g)
+  2. g.drawImage(fondo, ...)     <- ya lo tengo
+  3. dibujarMapa(g)              <- muros y bloques
+  4. jugador.dibujar(g)
+  5. for arrayBombas     -> bomba.dibujar(g)
+  6. for arrayExplosiones -> explosion.dibujar(g)
+  7. for arrayEnemigos   -> enemigo.dibujar(g)
+
+
+================================================================
+  COSAS A RECORDAR
+================================================================
+
+  - ArrayList necesita:  import java.util.ArrayList;
+  - Rectangle necesita:  import java.awt.Rectangle;
+  - Timer necesita:      import javax.swing.Timer;
+  - NO usar for-each cuando hago remove -> usar for inverso con i
+  - TAM_CELDA es public static -> accedo con AreaJuego.TAM_CELDA
+  - Para saber la celda de un objeto: fila = posY / TAM_CELDA
+  - El doble for del mapa es IGUAL que en Xagu (crearLabels)
+    la unica diferencia es que aqui dibujo con Graphics
+    y calculo x = col*TAM_CELDA en vez de que lo haga GridLayout
+  - Los enemigos NO se crean con Timer, se crean en el constructor
+    de AreaJuego directamente y se llama start() a todos
+  - Caballo  --> Jugador   (quitar salto, anadir vidas)
+  - Jinete   --> Enemigo   (4 direcciones en vez de caer)
+
+================================================================
