@@ -91,7 +91,7 @@ public class Jugador {
 		if(delayAnim==3) {
 			//Animacion
 			imgActual++;
-			if(imgActual == arrayImagenesMuerte.length) {
+			if(imgActual == arrayImagenesDcha.length) {
 				imgActual=0;
 			}
 			delayAnim = 0;
@@ -112,12 +112,14 @@ public class Jugador {
 		if(delayAnim==3) {
 			//Animacion
 			imgActual++;
-			if(imgActual == arrayImagenesDcha.length) {
+			if(imgActual == arrayImagenesMuerte.length) {
 				imgActual=0;
 			}
 			delayAnim = 0;
 		}
 	}
+	
+	
 
 	public Rectangle getRect() {
 		Rectangle rect;
