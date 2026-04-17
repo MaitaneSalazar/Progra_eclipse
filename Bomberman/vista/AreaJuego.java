@@ -1,15 +1,19 @@
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class AreaJuego extends JPanel{
-	public static final int ANCHO_FONDO = 1600;
 	public static final int FILAS     = 13;
 	public static final int COLS      = 15;
 	public static final int ANCHO_CELDA = 100;
 	public static final int ALTO_CELDA = 65;
+	public static final int ANCHO_FONDO = 1600;
 	private Image fondo;
 	private Image imgBloque;
 	private Image imgMuro;
@@ -22,8 +26,8 @@ public class AreaJuego extends JPanel{
 		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
 		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+		    {1,0,1,0,1,0,1,1,1,0,1,0,1,0,1},
+		    {1,0,0,0,0,0,1,0,1,0,0,0,0,0,1},
 		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
 		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
@@ -54,14 +58,41 @@ public class AreaJuego extends JPanel{
             }
         }
     }
-
+	
 	@Override
 	public void paint(Graphics g) {
-		// TODO Auto-generated method stub
-		super.paint(g);
-		g.drawImage(fondo, posXfondo, 0, ANCHO_FONDO, getHeight(), null);
-		dibujarMapa(g);
-		jugador.dibujar(g);
+	    super.paint(g);
+	    g.drawImage(fondo, 0, 0, ANCHO_FONDO, getHeight(), null);
+	    dibujarMapa(g);
+	    jugador.dibujar(g);
+	    
+	    
+	    dibujarDebugColisiones(g);
+	}
+
+	private void dibujarDebugColisiones(Graphics g) {
+	    Graphics2D g2 = (Graphics2D) g;
+
+
+	    for (int fila = 0; fila < FILAS; fila++) {
+	        for (int col = 0; col < COLS; col++) {
+	            int x = col * ANCHO_CELDA;
+	            int y = fila * ALTO_CELDA + 20;
+	            if (mapa[fila][col] == 1) {
+	                g2.setColor(new Color(255, 0, 0, 80));
+	                g2.fillRect(x, y-10, ANCHO_CELDA, ALTO_CELDA);
+	                g2.setColor(Color.RED);
+	                g2.drawRect(x, y-15, ANCHO_CELDA, ALTO_CELDA);
+	            }
+	        }
+	    }
+
+	    // Dibujar hitbox del jugador
+	    Rectangle rectJugador = jugador.getRect();
+	    g2.setColor(new Color(0, 0, 255, 80)); 
+	    g2.fillRect(rectJugador.x, rectJugador.y, rectJugador.width, rectJugador.height);
+	    g2.setColor(Color.BLUE);
+	    g2.drawRect(rectJugador.x, rectJugador.y, rectJugador.width, rectJugador.height);
 	}
 
 

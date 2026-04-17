@@ -74,28 +74,55 @@ public class Jugador {
 		} else if (estado == MUERTO) {
 			g.drawImage(arrayImagenesMuerte[imgActual], posX, posY, ancho, alto, areaJuego);
 		}
-		
+
 	}
 
 	public void mover() {
-		if(dirH == 0 && dirV == 0) {
+		if (dirH == 0 && dirV == 0) {
 			return;
 		}
-		if(posX > 80 && dirH == -1 || posX+ancho < areaJuego.getWidth()-60 && dirH== 1) { //Limites de movimiento es la pantalla
+
+		int posAntX = posX;
+		int posAntY = posY;
+
+		if (posX > 80 && dirH == -1 || posX + ancho < areaJuego.getWidth() - 60 && dirH == 1) {
 			posX = posX + velocidad * dirH;
-		} else if(posY > 5 && dirV == 1 || posY+alto < areaJuego.getHeight()-62 && dirV== -1) { //Limites de movimiento es la pantalla
+		}
+		if (posY > 5 && dirV == 1 || posY + alto < areaJuego.getHeight() - 62 && dirV == -1) {
 			posY = posY - velocidad * dirV;
 		}
-		delayAnim++;
 
-		if(delayAnim==3) {
-			//Animacion
+		// Animación
+		delayAnim++;
+		if (delayAnim == 3) {
 			imgActual++;
-			if(imgActual == arrayImagenesDcha.length) {
-				imgActual=0;
+			if (imgActual == arrayImagenesDcha.length) {
+				imgActual = 0;
 			}
 			delayAnim = 0;
 		}
+
+		Rectangle rectNuevo = new Rectangle(posX+30, posY+60, ancho-60, alto-95);
+		if (hayColision(rectNuevo)) {
+			posX = posAntX;
+			posY = posAntY;
+		}
+	}
+
+	private boolean hayColision(Rectangle rectJugador) {
+		int[][] mapa = areaJuego.getMapa();
+
+		for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
+			for (int col = 0; col < AreaJuego.COLS; col++) {
+				if (mapa[fila][col] == 1) {
+					Rectangle rectMuro = new Rectangle(col  * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA-15, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA);
+					if (rectJugador.intersects(rectMuro)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public void perderVida() {
@@ -105,7 +132,7 @@ public class Jugador {
 			estado = MUERTO;
 		}
 	}
-	
+
 	public void morir() {
 		delayAnim++;
 
@@ -118,12 +145,12 @@ public class Jugador {
 			delayAnim = 0;
 		}
 	}
-	
-	
+
+
 
 	public Rectangle getRect() {
 		Rectangle rect;
-		rect = new Rectangle(posX+10, posY+20, ancho-20, alto-20);
+		rect = new Rectangle(posX+30, posY+60, ancho-60, alto-95);
 		return rect;
 	}
 
