@@ -19,30 +19,55 @@ public class EventosAreaJuego {
 		}
 
 		reloj = new Timer(40, new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//Mover todos los elementos que forman parte del juego
-				if(areaJuego.getJugador().getEstado() == Jugador.VIVO) {
-					areaJuego.getJugador().mover();
+		        if (areaJuego.getJugador().getEstado() == Jugador.VIVO) {
+		            areaJuego.getJugador().mover();
 
-					//COLISION
-					for(int i=areaJuego.getArrayEnemigos().size()-1; i>=0; i--) {
-						if(areaJuego.getJugador().getRect().intersects(areaJuego.getArrayEnemigos().get(i).getRect())) {
-							//areaJuego.getArrayEnemigos().get(i).setEstaVivo(false);
-							areaJuego.getArrayEnemigos().remove(i);
-						}
-					}
-				}
-				
-				if(areaJuego.getJugador().getEstado() == Jugador.MUERTO) {
-					
-				}
+		            for (int i = areaJuego.getArrayEnemigos().size() - 1; i >= 0; i--) {
+		                if (areaJuego.getJugador().getRect().intersects(areaJuego.getArrayEnemigos().get(i).getRect())) {
+		                    areaJuego.getArrayEnemigos().remove(i);
+		                }
+		            }
+		        }
 
+		        // ← SOLO este bloque, el duplicado borrado
+		        if (areaJuego.getBomba() != null) {
+		            areaJuego.getBomba().actualizar();
 
-				areaJuego.repaint();
+		            if (areaJuego.getBomba().getEstado() == Bomba.EXPLOTANDO) {
+		                Explosion exp = new Explosion(
+		                    areaJuego,
+		                    areaJuego.getBomba().getCeldaFila(),
+		                    areaJuego.getBomba().getCeldaCol()
+		                );
+		                areaJuego.setExplosion(exp);
+		                areaJuego.setBomba(null);
+		            }
+		        }
 
-			}
+		        if (areaJuego.getExplosion() != null) {
+		            areaJuego.getExplosion().actualizar();
+
+		            if (areaJuego.getExplosion().colisionaCon(areaJuego.getJugador().getRect())) {
+		                areaJuego.getJugador().perderVida();
+		            }
+
+		            for (int i = areaJuego.getArrayEnemigos().size() - 1; i >= 0; i--) {
+		                if (areaJuego.getExplosion().colisionaCon(areaJuego.getArrayEnemigos().get(i).getRect())) {
+		                    areaJuego.getArrayEnemigos().remove(i);
+		                    areaJuego.getJugador().sumarPuntos(100);
+		                }
+		            }
+
+		            if (areaJuego.getExplosion().haTerminado()) {
+		                areaJuego.setExplosion(null);
+		            }
+		        }
+
+		        areaJuego.repaint();
+		    }
 		});
 
 		reloj.start();
@@ -111,8 +136,12 @@ public class EventosAreaJuego {
 
 				}
 
-				if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					if (areaJuego.getBomba() == null) {
+						int jugadorX = areaJuego.getJugador().getPosX();
+						int jugadorY = areaJuego.getJugador().getPosY();
+						areaJuego.setBomba(new Bomba(areaJuego, jugadorX+areaJuego.getJugador().getAncho()/2, jugadorY+areaJuego.getJugador().getAncho()));
+					}
 				}
 
 				areaJuego.repaint();

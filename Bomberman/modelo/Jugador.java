@@ -13,6 +13,7 @@ public class Jugador {
 	private Image[] arrayImagenesEspalda;
 	private Image[] arrayImagenesFrente;
 	private Image[] arrayImagenesMuerte;
+	private HUD hud;
 	private int velocidad;
 	private int posX, posY;
 	private int ancho, alto;
@@ -24,9 +25,10 @@ public class Jugador {
 
 	private AreaJuego areaJuego;
 
-	public Jugador(AreaJuego areaJuego) {
+	public Jugador(AreaJuego areaJuego, HUD hud) {
 		this.areaJuego = areaJuego;
-		velocidad=10;
+		this.hud = hud;
+		velocidad=14;
 		estado=VIVO;
 		posX=100;
 		posY=660;
@@ -38,6 +40,9 @@ public class Jugador {
 		cargarImagenes();
 		delayAnim = 0;
 		vidas = 3;
+		
+		hud.setVidas(vidas);
+		hud.setScore(0);
 	}
 
 	public void cargarImagenes() {
@@ -131,6 +136,7 @@ public class Jugador {
 			vidas = 0;
 			estado = MUERTO;
 		}
+		hud.setVidas(vidas);
 	}
 
 	public void morir() {
@@ -145,6 +151,11 @@ public class Jugador {
 			delayAnim = 0;
 		}
 	}
+	
+	 public void sumarPuntos(int puntos) {
+	        int scoreActual = hud.getScore();
+	        hud.setScore(scoreActual + puntos);
+	    }
 
 
 

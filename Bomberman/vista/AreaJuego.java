@@ -18,81 +18,91 @@ public class AreaJuego extends JPanel{
 	private Image imgBloque;
 	private Image imgMuro;
 	private int posXfondo;
+	private HUD hud;
 	private EventosAreaJuego eventosAreaJuego;
 	private Jugador jugador;
+	private Bomba bomba;
+	private Explosion explosion;
 	private ArrayList<Enemigo> arrayEnemigos;
 	private int[][] mapa = {
-		    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-		    {1,0,1,0,1,0,1,1,1,0,1,0,1,0,1},
-		    {1,0,0,0,0,0,1,0,1,0,0,0,0,0,1},
-		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-		    {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-		    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-		    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,1,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,1,0,1,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 
-	public AreaJuego() {
+	public AreaJuego(HUD hud) {
+		this.hud = hud;
 		fondo = new ImageIcon(getClass().getResource("Fondo.png")).getImage();
 		imgBloque = new ImageIcon(getClass().getResource("Extra.png")).getImage();
 		imgMuro = new ImageIcon(getClass().getResource("Vacio.png")).getImage();
 		posXfondo = 0;
 		eventosAreaJuego = new EventosAreaJuego(this);
-		jugador = new Jugador(this);
+		jugador = new Jugador(this, hud);
 		arrayEnemigos = new ArrayList<Enemigo>();
 	}
-	
+
 	private void dibujarMapa(Graphics g) {
-        for (int fila = 0; fila < mapa.length; fila++) {
-            for (int col = 0; col < mapa[0].length; col++) {
-                int x = col  * ANCHO_CELDA;
-                int y = fila * ALTO_CELDA;
-                if (mapa[fila][col] == 1)
-                    g.drawImage(imgMuro, x, y, ANCHO_CELDA, ALTO_CELDA, this);
-                if (mapa[fila][col] == 2)
-                    g.drawImage(imgBloque, x, y, ANCHO_CELDA, ALTO_CELDA, this);
-            }
-        }
-    }
-	
+		for (int fila = 0; fila < mapa.length; fila++) {
+			for (int col = 0; col < mapa[0].length; col++) {
+				int x = col  * ANCHO_CELDA;
+				int y = fila * ALTO_CELDA;
+				if (mapa[fila][col] == 1)
+					g.drawImage(imgMuro, x, y, ANCHO_CELDA, ALTO_CELDA, this);
+				if (mapa[fila][col] == 2)
+					g.drawImage(imgBloque, x, y, ANCHO_CELDA, ALTO_CELDA, this);
+			}
+		}
+	}
+
 	@Override
 	public void paint(Graphics g) {
-	    super.paint(g);
-	    g.drawImage(fondo, 0, 0, ANCHO_FONDO, getHeight(), null);
-	    dibujarMapa(g);
-	    jugador.dibujar(g);
-	    
-	    
-	    dibujarDebugColisiones(g);
+		super.paint(g);
+		g.drawImage(fondo, 0, 0, ANCHO_FONDO, getHeight(), null);
+		dibujarMapa(g);
+
+		if (bomba != null) {
+			bomba.dibujar(g);
+		}
+		if (explosion != null) {
+			explosion.dibujar(g);
+		}
+		jugador.dibujar(g);
+
+		dibujarDebugColisiones(g);
 	}
 
 	private void dibujarDebugColisiones(Graphics g) {
-	    Graphics2D g2 = (Graphics2D) g;
+		Graphics2D g2 = (Graphics2D) g;
 
 
-	    for (int fila = 0; fila < FILAS; fila++) {
-	        for (int col = 0; col < COLS; col++) {
-	            int x = col * ANCHO_CELDA;
-	            int y = fila * ALTO_CELDA + 20;
-	            if (mapa[fila][col] == 1) {
-	                g2.setColor(new Color(255, 0, 0, 80));
-	                g2.fillRect(x, y-10, ANCHO_CELDA, ALTO_CELDA);
-	                g2.setColor(Color.RED);
-	                g2.drawRect(x, y-15, ANCHO_CELDA, ALTO_CELDA);
-	            }
-	        }
-	    }
+		for (int fila = 0; fila < FILAS; fila++) {
+			for (int col = 0; col < COLS; col++) {
+				int x = col * ANCHO_CELDA;
+				int y = fila * ALTO_CELDA + 20;
+				if (mapa[fila][col] == 1) {
+					g2.setColor(new Color(255, 0, 0, 80));
+					g2.fillRect(x, y-10, ANCHO_CELDA, ALTO_CELDA);
+					g2.setColor(Color.RED);
+					g2.drawRect(x, y-15, ANCHO_CELDA, ALTO_CELDA);
+				}
+			}
+		}
 
-	    // Dibujar hitbox del jugador
-	    Rectangle rectJugador = jugador.getRect();
-	    g2.setColor(new Color(0, 0, 255, 80)); 
-	    g2.fillRect(rectJugador.x, rectJugador.y, rectJugador.width, rectJugador.height);
-	    g2.setColor(Color.BLUE);
-	    g2.drawRect(rectJugador.x, rectJugador.y, rectJugador.width, rectJugador.height);
+		// Dibujar hitbox del jugador
+		Rectangle rectJugador = jugador.getRect();
+		g2.setColor(new Color(0, 0, 255, 80)); 
+		g2.fillRect(rectJugador.x, rectJugador.y, rectJugador.width, rectJugador.height);
+		g2.setColor(Color.BLUE);
+		g2.drawRect(rectJugador.x, rectJugador.y, rectJugador.width, rectJugador.height);
 	}
 
 
@@ -134,5 +144,29 @@ public class AreaJuego extends JPanel{
 
 	public void setArrayEnemigos(ArrayList<Enemigo> arrayEnemigos) {
 		this.arrayEnemigos = arrayEnemigos;
+	}
+
+	public HUD getHud() {
+		return hud;
+	}
+
+	public void setHud(HUD hud) {
+		this.hud = hud;
+	}
+
+	public Bomba getBomba() {
+		return bomba;
+	}
+
+	public void setBomba(Bomba bomba) {
+		this.bomba = bomba;
+	}
+
+	public Explosion getExplosion() {
+		return explosion;
+	}
+
+	public void setExplosion(Explosion explosion) {
+		this.explosion = explosion;
 	}
 }
