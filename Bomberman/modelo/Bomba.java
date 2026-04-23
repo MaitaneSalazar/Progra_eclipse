@@ -29,7 +29,7 @@ public class Bomba {
 		estado      = ACTIVA;
 		imgActual   = 0;
 		delayAnim   = 0;
-		temporizador = 75;
+		temporizador = 60;
 
 		imagenes = new Image[3];
 		for (int i = 0; i < imagenes.length; i++) {

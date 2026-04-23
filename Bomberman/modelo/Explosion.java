@@ -12,8 +12,10 @@ public class Explosion {
 	private Image imgCentro;
 	private Image imgHorizontal;
 	private Image imgVertical;
-	private Image imgFinHorizontal;
-	private Image imgFinVertical;
+	private Image imgFinHorizontalD;
+	private Image imgFinVerticalD;
+	private Image imgFinHorizontalI;
+	private Image imgFinVerticalI;
 
 	// Listas de celdas que ocupa la explosión en cada dirección
 	private ArrayList<int[]> celdasArriba;
@@ -27,7 +29,7 @@ public class Explosion {
 	public Explosion(AreaJuego areaJuego, int celdaFila, int celdaCol) {
 		this.areaJuego  = areaJuego;
 		this.celdaCentro = new int[]{celdaFila, celdaCol};
-		this.duracion   = 40;
+		this.duracion   = 15;
 
 		cargarImagenes();
 		calcularCeldas();
@@ -37,8 +39,10 @@ public class Explosion {
 		imgCentro        = new ImageIcon(getClass().getResource("FuegoCentro.png")).getImage();
 		imgHorizontal    = new ImageIcon(getClass().getResource("FuegoHorizontal.png")).getImage();
 		imgVertical      = new ImageIcon(getClass().getResource("FuegoVertical.png")).getImage();
-		imgFinHorizontal = new ImageIcon(getClass().getResource("FuegoHorizonalFin.png")).getImage();
-		imgFinVertical   = new ImageIcon(getClass().getResource("FuegoVerticalFin.png")).getImage();
+		imgFinHorizontalD = new ImageIcon(getClass().getResource("FuegoHorizonalFinD.png")).getImage();
+		imgFinVerticalD   = new ImageIcon(getClass().getResource("FuegoVerticalFinD.png")).getImage();
+		imgFinHorizontalI = new ImageIcon(getClass().getResource("FuegoHorizonalFinI.png")).getImage();
+		imgFinVerticalI   = new ImageIcon(getClass().getResource("FuegoVerticalFinI.png")).getImage();
 	}
 
 	// Calcula qué celdas ocupa el fuego, respetando muros y bloques
@@ -138,10 +142,10 @@ public class Explosion {
 		dibujarCelda(g, imgCentro, celdaCentro[0], celdaCentro[1]);
 
 		// Ramas
-		dibujarRama(g, celdasArriba, imgVertical, imgFinVertical);
-		dibujarRama(g, celdasAbajo, imgVertical, imgFinVertical);
-		dibujarRama(g, celdasIzquierda, imgHorizontal, imgFinHorizontal);
-		dibujarRama(g, celdasDerecha, imgHorizontal, imgFinHorizontal);
+		dibujarRama(g, celdasArriba, imgVertical, imgFinVerticalI);
+		dibujarRama(g, celdasAbajo, imgVertical, imgFinVerticalD);
+		dibujarRama(g, celdasIzquierda, imgHorizontal, imgFinHorizontalI);
+		dibujarRama(g, celdasDerecha, imgHorizontal, imgFinHorizontalD);
 	}
 
 	private void dibujarRama(Graphics g, ArrayList<int[]> celdas, Image imgMedio, Image imgFin) {

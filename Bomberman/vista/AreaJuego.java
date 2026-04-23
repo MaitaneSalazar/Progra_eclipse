@@ -17,7 +17,6 @@ public class AreaJuego extends JPanel{
 	private Image fondo;
 	private Image imgBloque;
 	private Image imgMuro;
-	private int posXfondo;
 	private HUD hud;
 	private EventosAreaJuego eventosAreaJuego;
 	private Jugador jugador;
@@ -44,10 +43,13 @@ public class AreaJuego extends JPanel{
 		fondo = new ImageIcon(getClass().getResource("Fondo.png")).getImage();
 		imgBloque = new ImageIcon(getClass().getResource("Extra.png")).getImage();
 		imgMuro = new ImageIcon(getClass().getResource("Vacio.png")).getImage();
-		posXfondo = 0;
 		eventosAreaJuego = new EventosAreaJuego(this);
 		jugador = new Jugador(this, hud);
 		arrayEnemigos = new ArrayList<Enemigo>();
+		// Añadir enemigos en posiciones concretas libres del mapa
+		arrayEnemigos.add(new Enemigo(this, 1 * ANCHO_CELDA, 1 * ALTO_CELDA)); // celda [1][1]
+		arrayEnemigos.add(new Enemigo(this, 3 * ANCHO_CELDA, 1 * ALTO_CELDA)); // celda [1][3]
+		arrayEnemigos.add(new Enemigo(this, 1 * ANCHO_CELDA, 3 * ALTO_CELDA)); // celda [3][1]
 	}
 
 	private void dibujarMapa(Graphics g) {
@@ -62,6 +64,8 @@ public class AreaJuego extends JPanel{
 			}
 		}
 	}
+	
+	
 
 	@Override
 	public void paint(Graphics g) {
@@ -75,6 +79,12 @@ public class AreaJuego extends JPanel{
 		if (explosion != null) {
 			explosion.dibujar(g);
 		}
+		
+		// Dibujar enemigos
+		for (int i = 0; i < arrayEnemigos.size(); i++) {
+		    arrayEnemigos.get(i).dibujar(g);
+		}
+		
 		jugador.dibujar(g);
 
 		dibujarDebugColisiones(g);
@@ -112,14 +122,6 @@ public class AreaJuego extends JPanel{
 
 	public void setMapa(int[][] mapa) {
 		this.mapa = mapa;
-	}
-
-	public int getPosXfondo() {
-		return posXfondo;
-	}
-
-	public void setPosXfondo(int posXfondo) {
-		this.posXfondo = posXfondo;
 	}
 
 	public EventosAreaJuego getEventosAreaJuego() {
