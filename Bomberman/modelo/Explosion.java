@@ -91,7 +91,8 @@ public class Explosion {
 		int[][] mapa = areaJuego.getMapa();
 		for (int[] celda : celdas) {
 			if (mapa[celda[0]][celda[1]] == 2) {
-				mapa[celda[0]][celda[1]] = 0; // destruir bloque
+				areaJuego.destruirObstaculo(celda[0], celda[1]);
+				areaJuego.getJugador().sumarPuntos(Obstaculo.PUNTOS);
 			}
 		}
 	}
@@ -132,16 +133,10 @@ public class Explosion {
 
 		return false;
 	}
-
-	// Convierte fila/col a un Rectangle en píxeles
-	private Rectangle getRectCelda(int fila, int col) {
-		return new Rectangle(col * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA);
-	}
-
+	
 	public void dibujar(Graphics g) {
 		dibujarCelda(g, imgCentro, celdaCentro[0], celdaCentro[1]);
 
-		// Ramas
 		dibujarRama(g, celdasArriba, imgVertical, imgFinVerticalI);
 		dibujarRama(g, celdasAbajo, imgVertical, imgFinVerticalD);
 		dibujarRama(g, celdasIzquierda, imgHorizontal, imgFinHorizontalI);
@@ -149,18 +144,23 @@ public class Explosion {
 	}
 
 	private void dibujarRama(Graphics g, ArrayList<int[]> celdas, Image imgMedio, Image imgFin) {
-	    for (int i = 0; i < celdas.size(); i++) {
-	        int[] celda = celdas.get(i);
+		for (int i = 0; i < celdas.size(); i++) {
+			int[] celda = celdas.get(i);
 
-	        if (i == celdas.size() - 1) {
-	            dibujarCelda(g, imgFin, celda[0], celda[1]);
-	        } else {
-	            dibujarCelda(g, imgMedio, celda[0], celda[1]);
-	        }
-	    }
+			if (i == celdas.size() - 1) {
+				dibujarCelda(g, imgFin, celda[0], celda[1]);
+			} else {
+				dibujarCelda(g, imgMedio, celda[0], celda[1]);
+			}
+		}
 	}
 
 	private void dibujarCelda(Graphics g, Image img, int fila, int col) {
 		g.drawImage(img, col  * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA, areaJuego);
 	}
+	
+	private Rectangle getRectCelda(int fila, int col) {
+		return new Rectangle(col * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA);
+	}
+
 }

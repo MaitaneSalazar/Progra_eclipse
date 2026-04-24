@@ -42,39 +42,39 @@ public class Jugador {
 		delayAnim = 0;
 		vidas = 3;
 		invencibilidad = 0;
-		
+
 		hud.setVidas(vidas);
 		hud.setScore(0);
 	}
 
 	public void cargarImagenes() {
-	    arrayImagenesIzq      = new Image[3];
-	    arrayImagenesDcha     = new Image[3];
-	    arrayImagenesEspalda  = new Image[3];
-	    arrayImagenesFrente   = new Image[3];
-	    arrayImagenesMuerte   = new Image[7];
+		arrayImagenesIzq      = new Image[3];
+		arrayImagenesDcha     = new Image[3];
+		arrayImagenesEspalda  = new Image[3];
+		arrayImagenesFrente   = new Image[3];
+		arrayImagenesMuerte   = new Image[7];
 
-	    // Bucle para las imágenes de movimiento (3 imágenes)
-	    for (int i = 0; i < arrayImagenesIzq.length; i++) {
-	        arrayImagenesIzq[i]     = new ImageIcon(getClass().getResource("JugadorAndarI" + i + ".png")).getImage();
-	        arrayImagenesDcha[i]    = new ImageIcon(getClass().getResource("JugadorAndarD" + i + ".png")).getImage();
-	        arrayImagenesEspalda[i] = new ImageIcon(getClass().getResource("JugadorAndarE" + i + ".png")).getImage();
-	        arrayImagenesFrente[i]  = new ImageIcon(getClass().getResource("JugadorAndarF" + i + ".png")).getImage();
-	    }
 
-	    // Bucle separado para las imágenes de muerte (7 imágenes)
-	    for (int i = 0; i < arrayImagenesMuerte.length; i++) {
-	        arrayImagenesMuerte[i] = new ImageIcon(getClass().getResource("JugadorMuerte" + i + ".png")).getImage();
-	    }
+		for (int i = 0; i < arrayImagenesIzq.length; i++) {
+			arrayImagenesIzq[i]     = new ImageIcon(getClass().getResource("JugadorAndarI" + i + ".png")).getImage();
+			arrayImagenesDcha[i]    = new ImageIcon(getClass().getResource("JugadorAndarD" + i + ".png")).getImage();
+			arrayImagenesEspalda[i] = new ImageIcon(getClass().getResource("JugadorAndarE" + i + ".png")).getImage();
+			arrayImagenesFrente[i]  = new ImageIcon(getClass().getResource("JugadorAndarF" + i + ".png")).getImage();
+		}
+
+
+		for (int i = 0; i < arrayImagenesMuerte.length; i++) {
+			arrayImagenesMuerte[i] = new ImageIcon(getClass().getResource("JugadorMuerte" + i + ".png")).getImage();
+		}
 	}
 
 	public void dibujar(Graphics g) {
-		
+
 		if(estado == VIVO) {
 			if (invencibilidad > 0 && (invencibilidad / 4) % 2 == 0) {
-		        return; // no dibuja → efecto parpadeo
-		    }
-			
+				return;
+			}
+
 			if(dirH == 0 && dirV == 0) {
 				imgActual = 1;
 				g.drawImage(arrayImagenesFrente[imgActual], posX, posY, ancho, alto, areaJuego);
@@ -108,7 +108,6 @@ public class Jugador {
 			posY = posY - velocidad * dirV;
 		}
 
-		// Animación
 		delayAnim++;
 		if (delayAnim == 3) {
 			imgActual++;
@@ -126,57 +125,62 @@ public class Jugador {
 	}
 
 	private boolean hayColision(Rectangle rectJugador) {
-		int[][] mapa = areaJuego.getMapa();
+	    int[][] mapa = areaJuego.getMapa();
 
-		for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
-			for (int col = 0; col < AreaJuego.COLS; col++) {
-				if (mapa[fila][col] == 1) {
-					Rectangle rectMuro = new Rectangle(col  * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA-15, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA);
-					if (rectJugador.intersects(rectMuro)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
+	    for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
+	        for (int col = 0; col < AreaJuego.COLS; col++) {
+	            if (mapa[fila][col] == 1 || mapa[fila][col] == 2) {
+	                Rectangle rectMuro = new Rectangle(
+	                    col  * AreaJuego.ANCHO_CELDA,
+	                    fila * AreaJuego.ALTO_CELDA - 15,
+	                    AreaJuego.ANCHO_CELDA,
+	                    AreaJuego.ALTO_CELDA
+	                );
+	                if (rectJugador.intersects(rectMuro)) {
+	                    return true;
+	                }
+	            }
+	        }
+	    }
+	    return false;
 	}
 
 	public void perderVida() {
-	    if (invencibilidad > 0) return;
+		if (invencibilidad > 0) return;
 
-	    vidas--;
-	    if (vidas <= 0) {
-	        vidas = 0;
-	        estado = MUERTO;
-	        imgActual = 0;  
-	        delayAnim = 0;
-	    }
-	    hud.setVidas(vidas);
-	    invencibilidad = 60;
+		vidas--;
+		if (vidas <= 0) {
+			vidas = 0;
+			estado = MUERTO;
+			imgActual = 0;  
+			delayAnim = 0;
+		}
+		hud.setVidas(vidas);
+		invencibilidad = 60;
 	}
 	public void morir() {
-	    // Si ya está en la última imagen, no hacer nada
-	    if (imgActual == arrayImagenesMuerte.length - 1) return;
+		// Si ya es la ultima imagen para
+		if (imgActual == arrayImagenesMuerte.length - 1) {
+			return;
+		}
 
-	    delayAnim++;
-	    if (delayAnim == 5) {
-	        imgActual++;
-	        delayAnim = 0;
-	    }
+		delayAnim++;
+		if (delayAnim == 5) {
+			imgActual++;
+			delayAnim = 0;
+		}
 	}
-	
+
 	public void actualizar() {
-	    if (invencibilidad > 0) {
-	        invencibilidad--;
-	    }
+		if (invencibilidad > 0) {
+			invencibilidad--;
+		}
 	}
-	
-	 public void sumarPuntos(int puntos) {
-	        int scoreActual = hud.getScore();
-	        hud.setScore(scoreActual + puntos);
-	    }
 
-
+	public void sumarPuntos(int puntos) {
+		int scoreActual = hud.getScore();
+		hud.setScore(scoreActual + puntos);
+	}
 
 	public Rectangle getRect() {
 		Rectangle rect;
