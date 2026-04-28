@@ -53,28 +53,74 @@ public class Enemigo {
 	}
 
 	private void cargarImagenes() {
-		imgVivo0  = new ImageIcon(getClass().getResource("Enemy0.png")).getImage();
-		imgVivo1  = new ImageIcon(getClass().getResource("Enemy1.png")).getImage();
+		imgVivo0 = new ImageIcon(getClass().getResource("Enemy0.png")).getImage();
+		imgVivo1 = new ImageIcon(getClass().getResource("Enemy1.png")).getImage();
 		imgMuerte = new ImageIcon(getClass().getResource("Enemy2.png")).getImage();
 	}
 
 	public void mover() {
-		if (estado == MUERTO) {
-			return;
-		}
+		if (estado == MUERTO) return;
 
 		int posAntX = posX;
 		int posAntY = posY;
 
-		if (direccion == IZQUIERDA) posX -= velocidad;
-		if (direccion == DERECHA)   posX += velocidad;
-		if (direccion == ARRIBA)    posY -= velocidad;
-		if (direccion == ABAJO)     posY += velocidad;
+		if (direccion == IZQUIERDA) {
+			posX -= velocidad;
+		}
+		if (direccion == DERECHA) {
+			posX += velocidad;
+		}
+		if (direccion == ARRIBA) {
+			posY -= velocidad;
+		}
+		if (direccion == ABAJO) {
+			posY += velocidad;
+		}
 
 		if (hayColision()) {
 			posX = posAntX;
 			posY = posAntY;
-			cambiarDireccion();
+
+			boolean encontrada = false;
+			int[] direcciones = {IZQUIERDA, DERECHA, ARRIBA, ABAJO};
+
+			for (int i = direcciones.length - 1; i > 0; i--) {
+				int j = random.nextInt(i + 1);
+				int temp = direcciones[i];
+				direcciones[i] = direcciones[j];
+				direcciones[j] = temp;
+			}
+
+			for (int d : direcciones) {
+				direccion = d;
+				if (direccion == IZQUIERDA) {
+					posX -= velocidad;
+				}
+				if (direccion == DERECHA) {
+					posX += velocidad;
+				}
+				if (direccion == ARRIBA) {
+					posY -= velocidad;
+				}
+				if (direccion == ABAJO) {
+					posY += velocidad;
+				}
+
+				if (!hayColision()) {
+					encontrada = true;
+					break;
+				}
+
+				posX = posAntX;
+				posY = posAntY;
+			}
+
+			if (!encontrada) {
+				return;
+			}
+
+			contadorPasos = 0;
+			pasosCambioDireccion = random.nextInt(30) + 20;
 		}
 
 		contadorPasos++;
@@ -85,9 +131,9 @@ public class Enemigo {
 		delayAnim++;
 		if (delayAnim == 5) {
 			if (imgActual == 0) {
-			    imgActual = 1;
+				imgActual = 1;
 			} else {
-			    imgActual = 0;
+				imgActual = 0;
 			}
 			delayAnim = 0;
 		}
@@ -97,8 +143,6 @@ public class Enemigo {
 		estado = MUERTO;
 	}
 
-	// Cuenta atrás de la animación de muerte
-	// Devuelve true cuando ya se puede eliminar de la lista
 	public boolean actualizarMuerte() {
 		if (estado == MUERTO) {
 			temporizadorMuerte--;
@@ -114,9 +158,9 @@ public class Enemigo {
 			Image imgActual;
 
 			if (this.imgActual == 0) {
-			    imgActual = imgVivo0;
+				imgActual = imgVivo0;
 			} else {
-			    imgActual = imgVivo1;
+				imgActual = imgVivo1;
 			}
 			g.drawImage(imgActual, posX, posY, ancho, alto, areaJuego);
 		} else if (estado == MUERTO) {
@@ -136,7 +180,7 @@ public class Enemigo {
 
 		for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
 			for (int col = 0; col < AreaJuego.COLS; col++) {
-				if (mapa[fila][col] == 1 || mapa[fila][col] == 2) {
+				if (mapa[fila][col] == 1 || mapa[fila][col] == 2 || mapa[fila][col] == 3) {
 					Rectangle rectMuro = new Rectangle(
 							col  * AreaJuego.ANCHO_CELDA,
 							fila * AreaJuego.ALTO_CELDA,
@@ -153,7 +197,13 @@ public class Enemigo {
 	}
 
 	public Rectangle getRect() {
-		return new Rectangle(posX, posY, ancho, alto);
+		int margen = 15;
+		return new Rectangle(
+				posX + margen,
+				posY + margen,
+				ancho - margen * 2,
+				alto  - margen * 2
+				);
 	}
 
 	public int getEstado()  { 

@@ -17,7 +17,6 @@ public class Explosion {
 	private Image imgFinHorizontalI;
 	private Image imgFinVerticalI;
 
-	// Listas de celdas que ocupa la explosión en cada dirección
 	private ArrayList<int[]> celdasArriba;
 	private ArrayList<int[]> celdasAbajo;
 	private ArrayList<int[]> celdasIzquierda;
@@ -27,40 +26,37 @@ public class Explosion {
 	private AreaJuego areaJuego;
 
 	public Explosion(AreaJuego areaJuego, int celdaFila, int celdaCol) {
-		this.areaJuego  = areaJuego;
+		this.areaJuego = areaJuego;
 		this.celdaCentro = new int[]{celdaFila, celdaCol};
-		this.duracion   = 15;
+		this.duracion = 15;
 
 		cargarImagenes();
 		calcularCeldas();
 	}
 
 	private void cargarImagenes() {
-		imgCentro        = new ImageIcon(getClass().getResource("FuegoCentro.png")).getImage();
-		imgHorizontal    = new ImageIcon(getClass().getResource("FuegoHorizontal.png")).getImage();
-		imgVertical      = new ImageIcon(getClass().getResource("FuegoVertical.png")).getImage();
+		imgCentro = new ImageIcon(getClass().getResource("FuegoCentro.png")).getImage();
+		imgHorizontal = new ImageIcon(getClass().getResource("FuegoHorizontal.png")).getImage();
+		imgVertical = new ImageIcon(getClass().getResource("FuegoVertical.png")).getImage();
 		imgFinHorizontalD = new ImageIcon(getClass().getResource("FuegoHorizonalFinD.png")).getImage();
-		imgFinVerticalD   = new ImageIcon(getClass().getResource("FuegoVerticalFinD.png")).getImage();
+		imgFinVerticalD = new ImageIcon(getClass().getResource("FuegoVerticalFinD.png")).getImage();
 		imgFinHorizontalI = new ImageIcon(getClass().getResource("FuegoHorizonalFinI.png")).getImage();
-		imgFinVerticalI   = new ImageIcon(getClass().getResource("FuegoVerticalFinI.png")).getImage();
+		imgFinVerticalI = new ImageIcon(getClass().getResource("FuegoVerticalFinI.png")).getImage();
 	}
 
-	// Calcula qué celdas ocupa el fuego, respetando muros y bloques
-	private void calcularCeldas() {
-		celdasArriba    = calcularRama(-1, 0); // arriba: fila -1
-		celdasAbajo     = calcularRama( 1, 0); // abajo: fila +1
-		celdasIzquierda = calcularRama( 0,-1); // izquierda: col  -1
-		celdasDerecha   = calcularRama( 0, 1); // derecha: col  +1
 
-		// Destruir bloques (valor 2) en el radio
+	private void calcularCeldas() {
+		celdasArriba = calcularRama(-1, 0); // arriba: fila -1
+		celdasAbajo = calcularRama( 1, 0); // abajo: fila +1
+		celdasIzquierda = calcularRama( 0,-1); // izquierda: col  -1
+		celdasDerecha = calcularRama( 0, 1); // derecha: col  +1
+
 		destruirBloques(celdasArriba);
 		destruirBloques(celdasAbajo);
 		destruirBloques(celdasIzquierda);
 		destruirBloques(celdasDerecha);
 	}
 
-	// Recorre hasta RADIO celdas en una dirección
-	// Se detiene si encuentra muro (1) o bloque destructible (2)
 	private ArrayList<int[]> calcularRama(int dFila, int dCol) {
 		ArrayList<int[]> celdas = new ArrayList<>();
 		int[][] mapa = areaJuego.getMapa();
@@ -69,19 +65,19 @@ public class Explosion {
 			int fila = celdaCentro[0] + dFila * i;
 			int col  = celdaCentro[1] + dCol  * i;
 
-			// Fuera del mapa parar
-			if (fila < 0 || fila >= AreaJuego.FILAS || col < 0 || col >= AreaJuego.COLS) break;
+			if (fila < 0 || fila >= AreaJuego.FILAS || col < 0 || col >= AreaJuego.COLS) {
+				break;
+			}
 
-			// Muro indestructible parar sin añadir
-			if (mapa[fila][col] == 1) break;
+			if (mapa[fila][col] == 1 || mapa[fila][col] == 3) {
+				break;
+			}
 
-			// Bloque destructible añadir y parar
 			if (mapa[fila][col] == 2) {
 				celdas.add(new int[]{fila, col});
 				break;
 			}
 
-			// Celda libre añadir y continuar
 			celdas.add(new int[]{fila, col});
 		}
 		return celdas;
@@ -133,7 +129,7 @@ public class Explosion {
 
 		return false;
 	}
-	
+
 	public void dibujar(Graphics g) {
 		dibujarCelda(g, imgCentro, celdaCentro[0], celdaCentro[1]);
 
@@ -158,7 +154,7 @@ public class Explosion {
 	private void dibujarCelda(Graphics g, Image img, int fila, int col) {
 		g.drawImage(img, col  * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA, areaJuego);
 	}
-	
+
 	private Rectangle getRectCelda(int fila, int col) {
 		return new Rectangle(col * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA);
 	}

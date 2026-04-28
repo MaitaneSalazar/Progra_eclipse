@@ -1,3 +1,4 @@
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -93,6 +94,8 @@ public class EventosAreaJuego {
 						areaJuego.getArrayEnemigos().remove(i);
 					}
 				}
+				
+				areaJuego.actualizarMuroEspecial();
 
 				areaJuego.repaint();
 			}
@@ -162,22 +165,21 @@ public class EventosAreaJuego {
 				}
 
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					if (areaJuego.getBomba() == null) {
-						int jugadorX = areaJuego.getJugador().getPosX();
-						int jugadorY = areaJuego.getJugador().getPosY();
+				    if (areaJuego.getBomba() == null) {
 
-						// Calcular en qué celda está el jugador
-						int celdaCol  = (jugadorX + areaJuego.getJugador().getAncho() / 2) / AreaJuego.ANCHO_CELDA;
-						int celdaFila = (jugadorY + areaJuego.getJugador().getAlto()  / 2) / AreaJuego.ALTO_CELDA;
+				        Rectangle rect = areaJuego.getJugador().getRect();
+				        int centroX = rect.x + rect.width  / 2;
+				        int centroY = rect.y + rect.height / 2;
 
-						// Solo colocar bomba si la celda es libre (valor 0)
-						if (areaJuego.getMapa()[celdaFila][celdaCol] == 0) {
-							areaJuego.setBomba(new Bomba(areaJuego,
-									jugadorX + areaJuego.getJugador().getAncho() / 2,
-									jugadorY + areaJuego.getJugador().getAlto()  / 2
-									));
-						}
-					}
+				        int celdaCol  = centroX / AreaJuego.ANCHO_CELDA;
+				        int celdaFila = centroY / AreaJuego.ALTO_CELDA;
+
+				        // Solo colocar bomba si la celda es libre (valor 0)
+				        if (areaJuego.getMapa()[celdaFila][celdaCol] == 0) {
+				            areaJuego.setBomba(new Bomba(areaJuego,
+				                centroX, centroY));
+				        }
+				    }
 				}
 
 				areaJuego.repaint();

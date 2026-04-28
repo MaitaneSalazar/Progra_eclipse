@@ -48,18 +48,18 @@ public class Jugador {
 	}
 
 	public void cargarImagenes() {
-		arrayImagenesIzq      = new Image[3];
-		arrayImagenesDcha     = new Image[3];
-		arrayImagenesEspalda  = new Image[3];
-		arrayImagenesFrente   = new Image[3];
-		arrayImagenesMuerte   = new Image[7];
+		arrayImagenesIzq = new Image[3];
+		arrayImagenesDcha = new Image[3];
+		arrayImagenesEspalda = new Image[3];
+		arrayImagenesFrente = new Image[3];
+		arrayImagenesMuerte = new Image[7];
 
 
 		for (int i = 0; i < arrayImagenesIzq.length; i++) {
-			arrayImagenesIzq[i]     = new ImageIcon(getClass().getResource("JugadorAndarI" + i + ".png")).getImage();
-			arrayImagenesDcha[i]    = new ImageIcon(getClass().getResource("JugadorAndarD" + i + ".png")).getImage();
+			arrayImagenesIzq[i] = new ImageIcon(getClass().getResource("JugadorAndarI" + i + ".png")).getImage();
+			arrayImagenesDcha[i] = new ImageIcon(getClass().getResource("JugadorAndarD" + i + ".png")).getImage();
 			arrayImagenesEspalda[i] = new ImageIcon(getClass().getResource("JugadorAndarE" + i + ".png")).getImage();
-			arrayImagenesFrente[i]  = new ImageIcon(getClass().getResource("JugadorAndarF" + i + ".png")).getImage();
+			arrayImagenesFrente[i] = new ImageIcon(getClass().getResource("JugadorAndarF" + i + ".png")).getImage();
 		}
 
 
@@ -129,7 +129,7 @@ public class Jugador {
 
 	    for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
 	        for (int col = 0; col < AreaJuego.COLS; col++) {
-	            if (mapa[fila][col] == 1 || mapa[fila][col] == 2) {
+	            if (mapa[fila][col] == 1 || mapa[fila][col] == 2 || mapa[fila][col] == 3) {
 	                Rectangle rectMuro = new Rectangle(
 	                    col  * AreaJuego.ANCHO_CELDA,
 	                    fila * AreaJuego.ALTO_CELDA - 15,

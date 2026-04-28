@@ -19,13 +19,8 @@ public class Obstaculo {
 	}
 
 	public void dibujar(Graphics g) {
-		g.drawImage(imagen,
-				col  * AreaJuego.ANCHO_CELDA,
-				fila * AreaJuego.ALTO_CELDA,
-				AreaJuego.ANCHO_CELDA,
-				AreaJuego.ALTO_CELDA,
-				areaJuego
-				);
+		g.drawImage(imagen, col  * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA,
+				AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA, areaJuego);
 	}
 
 	public int getFila() { 
