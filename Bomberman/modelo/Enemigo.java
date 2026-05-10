@@ -181,12 +181,8 @@ public class Enemigo {
 		for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
 			for (int col = 0; col < AreaJuego.COLS; col++) {
 				if (mapa[fila][col] == 1 || mapa[fila][col] == 2 || mapa[fila][col] == 3) {
-					Rectangle rectMuro = new Rectangle(
-							col  * AreaJuego.ANCHO_CELDA,
-							fila * AreaJuego.ALTO_CELDA,
-							AreaJuego.ANCHO_CELDA,
-							AreaJuego.ALTO_CELDA
-							);
+					Rectangle rectMuro = new Rectangle(col * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA, 
+							AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA);
 					if (rectEnemigo.intersects(rectMuro)) {
 						return true;
 					}
@@ -198,12 +194,7 @@ public class Enemigo {
 
 	public Rectangle getRect() {
 		int margen = 15;
-		return new Rectangle(
-				posX + margen,
-				posY + margen,
-				ancho - margen * 2,
-				alto  - margen * 2
-				);
+		return new Rectangle(posX + margen, posY + margen, ancho - margen * 2, alto  - margen * 2);
 	}
 
 	public int getEstado()  { 

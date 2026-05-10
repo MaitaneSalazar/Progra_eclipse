@@ -4,12 +4,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 public class EventosAreaJuego {
 	private AreaJuego areaJuego;
 	private int[] estadoTeclas;
 	private Timer reloj;
+	private boolean pantallaFinalMostrada = false;
 
 	public EventosAreaJuego(AreaJuego areaJuego) {
 		this.areaJuego = areaJuego;
@@ -37,7 +39,7 @@ public class EventosAreaJuego {
 					}
 				}
 
-				// Animación de muerte
+				// Animacion de muerte
 				if (areaJuego.getJugador().getEstado() == Jugador.MUERTO) {
 					areaJuego.getJugador().morir();
 				}
@@ -63,16 +65,16 @@ public class EventosAreaJuego {
 					}
 				}
 
-				// Gestionar la explosión
+				// Gestionar la explosion
 				if (areaJuego.getExplosion() != null) {
 					areaJuego.getExplosion().actualizar();
 
-					// Colisión explosión jugador
+					// Colision explosion jugador
 					if (areaJuego.getExplosion().colisionaCon(areaJuego.getJugador().getRect())) {
 						areaJuego.getJugador().perderVida();
 					}
 
-					// Colisión explosión enemigos
+					// Colision explosion enemigos
 					for (int i = 0; i < areaJuego.getArrayEnemigos().size(); i++) {
 						Enemigo enemigo = areaJuego.getArrayEnemigos().get(i);
 						if (enemigo.getEstado() == Enemigo.VIVO) {
@@ -94,8 +96,10 @@ public class EventosAreaJuego {
 						areaJuego.getArrayEnemigos().remove(i);
 					}
 				}
-				
+
 				areaJuego.actualizarMuroEspecial();
+				comprobarVictoria();
+				comprobarDerrota();
 
 				areaJuego.repaint();
 			}
@@ -111,52 +115,63 @@ public class EventosAreaJuego {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-					estadoTeclas[0] = 0;
-					areaJuego.getJugador().setDirH(0);
-				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-					estadoTeclas[1] = 0;
-					areaJuego.getJugador().setDirH(0);
-				} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-					estadoTeclas[2] = 0;
-					areaJuego.getJugador().setDirV(0);
-				} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-					estadoTeclas[3] = 0;
-					areaJuego.getJugador().setDirV(0);
-				}
+			    if (e.getKeyCode() == KeyEvent.VK_A) {
+			        estadoTeclas[0] = 0;
+			        if (estadoTeclas[1] == 0) {
+			            areaJuego.getJugador().setDirH(0);
+			        } else {
+			            areaJuego.getJugador().setDirH(1);
+			        }
+			    } else if (e.getKeyCode() == KeyEvent.VK_D) {
+			        estadoTeclas[1] = 0;
+			        if (estadoTeclas[0] == 0) {
+			            areaJuego.getJugador().setDirH(0);
+			        } else {
+			            areaJuego.getJugador().setDirH(-1);
+			        }
+			    } else if (e.getKeyCode() == KeyEvent.VK_W) {
+			        estadoTeclas[2] = 0;
+			        if (estadoTeclas[3] == 0) {
+			            areaJuego.getJugador().setDirV(0);
+			        } else {
+			            areaJuego.getJugador().setDirV(-1);
+			        }
+			    } else if (e.getKeyCode() == KeyEvent.VK_S) {
+			        estadoTeclas[3] = 0;
+			        if (estadoTeclas[2] == 0) {
+			            areaJuego.getJugador().setDirV(0);
+			        } else {
+			            areaJuego.getJugador().setDirV(1);
+			        }
+			    }
 
-				if (estadoTeclas[0] == 0 && estadoTeclas[1] == 0 && estadoTeclas[2] == 0 && estadoTeclas[3] == 0) {
-					areaJuego.getJugador().setDirV(0);
-					areaJuego.getJugador().setDirH(0);
-				}
-
-				areaJuego.repaint();
+			    areaJuego.repaint();
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+				if (e.getKeyCode() == KeyEvent.VK_A) {
 					estadoTeclas[0] = 1;
 					estadoTeclas[1] = 0;
 					estadoTeclas[2] = 0;
 					estadoTeclas[3] = 0;
 					areaJuego.getJugador().setDirH(-1);
 
-				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+				} else if (e.getKeyCode() == KeyEvent.VK_D) {
 					estadoTeclas[0] = 0;
 					estadoTeclas[1] = 1;
 					estadoTeclas[2] = 0;
 					estadoTeclas[3] = 0;
 					areaJuego.getJugador().setDirH(1);
 
-				} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+				} else if (e.getKeyCode() == KeyEvent.VK_W) {
 					estadoTeclas[0] = 0;
 					estadoTeclas[1] = 0;
 					estadoTeclas[2] = 1;
 					estadoTeclas[3] = 0;
 					areaJuego.getJugador().setDirV(1);
 
-				} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+				} else if (e.getKeyCode() == KeyEvent.VK_S) {
 					estadoTeclas[0] = 0;
 					estadoTeclas[1] = 0;
 					estadoTeclas[2] = 0;
@@ -165,25 +180,65 @@ public class EventosAreaJuego {
 				}
 
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-				    if (areaJuego.getBomba() == null) {
+					if (areaJuego.getBomba() == null) {
 
-				        Rectangle rect = areaJuego.getJugador().getRect();
-				        int centroX = rect.x + rect.width  / 2;
-				        int centroY = rect.y + rect.height / 2;
+						Rectangle rect = areaJuego.getJugador().getRect();
+						int centroX = rect.x + rect.width / 2;
+						int centroY = rect.y + rect.height / 2;
 
-				        int celdaCol  = centroX / AreaJuego.ANCHO_CELDA;
-				        int celdaFila = centroY / AreaJuego.ALTO_CELDA;
+						int celdaCol = centroX / AreaJuego.ANCHO_CELDA;
+						int celdaFila = centroY / AreaJuego.ALTO_CELDA;
 
-				        // Solo colocar bomba si la celda es libre (valor 0)
-				        if (areaJuego.getMapa()[celdaFila][celdaCol] == 0) {
-				            areaJuego.setBomba(new Bomba(areaJuego,
-				                centroX, centroY));
-				        }
-				    }
+						// Solo colocar bomba si la celda es libre (valor 0)
+						if (areaJuego.getMapa()[celdaFila][celdaCol] == 0) {
+							areaJuego.setBomba(new Bomba(areaJuego,
+									centroX, centroY));
+						}
+					}
 				}
 
 				areaJuego.repaint();
 			}
 		});
+	}
+
+	private void comprobarVictoria() {
+		if (pantallaFinalMostrada) {
+			return;
+		}
+		if (areaJuego.getJugador().getEstado() != Jugador.VIVO) {
+			return;
+		}
+
+		if (areaJuego.getMapa()[AreaJuego.MURO_FILA][AreaJuego.MURO_COL] == 0) {
+
+			Rectangle rect = areaJuego.getJugador().getRect();
+			int centroX = rect.x + rect.width  / 2;
+			int centroY = rect.y + rect.height / 2;
+			int celdaCol = centroX / AreaJuego.ANCHO_CELDA;
+			int celdaFila = centroY / AreaJuego.ALTO_CELDA;
+
+			if (celdaFila == AreaJuego.VICTORIA_FILA && celdaCol == AreaJuego.VICTORIA_COL) {
+				pantallaFinalMostrada = true;
+				int score = areaJuego.getHud().getScore();
+				PantallaFinal pantalla = new PantallaFinal(PantallaFinal.VICTORIA, score);
+				pantalla.setVisible(true);
+				SwingUtilities.getWindowAncestor(areaJuego).dispose();
+				reloj.stop();
+			}
+		}
+	}
+
+	private void comprobarDerrota() {
+		if (pantallaFinalMostrada) return;
+		Jugador jugador = areaJuego.getJugador();
+		if (jugador.getEstado() == Jugador.MUERTO && jugador.animacionMuerteTerminada()) {
+			pantallaFinalMostrada = true;
+			int score = areaJuego.getHud().getScore();
+			PantallaFinal pantalla = new PantallaFinal(PantallaFinal.DERROTA, score);
+			pantalla.setVisible(true);
+			SwingUtilities.getWindowAncestor(areaJuego).dispose();
+			reloj.stop();
+		}
 	}
 }

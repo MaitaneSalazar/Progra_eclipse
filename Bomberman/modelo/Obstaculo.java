@@ -13,13 +13,13 @@ public class Obstaculo {
 
 	public Obstaculo(AreaJuego areaJuego, int fila, int col) {
 		this.areaJuego = areaJuego;
-		this.fila      = fila;
-		this.col       = col;
+		this.fila = fila;
+		this.col = col;
 		imagen = new ImageIcon(getClass().getResource("Obstaculo.png")).getImage();
 	}
 
 	public void dibujar(Graphics g) {
-		g.drawImage(imagen, col  * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA,
+		g.drawImage(imagen, col * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA,
 				AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA, areaJuego);
 	}
 

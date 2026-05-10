@@ -27,12 +27,12 @@ public class HUD extends JPanel {
 
 		g.drawImage(fondoHUD, 0, 0, getWidth(), getHeight(), this);
 
-		g.setColor(Color.WHITE);
-		g.setFont(new Font("Arial", Font.BOLD, 24));
+		g.setColor(new Color(255, 128, 0));
+		g.setFont(new Font("Arial Black", Font.BOLD, 40));
 
-		g.drawString("SCORE: " + score, 30, 50);
+		g.drawString("SCORE: " + score, 500, 60);
 
-		g.drawString("VIDAS: " + vidas, getWidth() - 180, 50);
+		g.drawString("LIVES: " + vidas, getWidth() - 650, 60);
 	}
 
 

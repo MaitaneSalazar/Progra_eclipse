@@ -20,15 +20,15 @@ public class Bomba {
 	public Bomba(AreaJuego areaJuego, int posX, int posY) {
 		this.areaJuego = areaJuego;
 
-		this.celda_col  = posX / AreaJuego.ANCHO_CELDA;
+		this.celda_col = posX / AreaJuego.ANCHO_CELDA;
 		this.celda_fila = posY / AreaJuego.ALTO_CELDA;
 
-		this.posX = celda_col  * AreaJuego.ANCHO_CELDA;
+		this.posX = celda_col * AreaJuego.ANCHO_CELDA;
 		this.posY = celda_fila * AreaJuego.ALTO_CELDA;
 
-		estado      = ACTIVA;
-		imgActual   = 0;
-		delayAnim   = 0;
+		estado = ACTIVA;
+		imgActual = 0;
+		delayAnim = 0;
 		temporizador = 60;
 
 		imagenes = new Image[3];
@@ -58,12 +58,7 @@ public class Bomba {
 
 	public void dibujar(Graphics g) {
 		if (estado == ACTIVA) {
-			g.drawImage(
-					imagenes[imgActual],
-					posX, posY,
-					AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA,
-					areaJuego
-					);
+			g.drawImage(imagenes[imgActual], posX, posY, AreaJuego.ANCHO_CELDA, AreaJuego.ALTO_CELDA, areaJuego);
 		}
 	}
 

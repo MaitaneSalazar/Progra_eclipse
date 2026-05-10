@@ -63,7 +63,7 @@ public class Explosion {
 
 		for (int i = 1; i <= RADIO; i++) {
 			int fila = celdaCentro[0] + dFila * i;
-			int col  = celdaCentro[1] + dCol  * i;
+			int col = celdaCentro[1] + dCol * i;
 
 			if (fila < 0 || fila >= AreaJuego.FILAS || col < 0 || col >= AreaJuego.COLS) {
 				break;

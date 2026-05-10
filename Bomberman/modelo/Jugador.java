@@ -125,24 +125,20 @@ public class Jugador {
 	}
 
 	private boolean hayColision(Rectangle rectJugador) {
-	    int[][] mapa = areaJuego.getMapa();
+		int[][] mapa = areaJuego.getMapa();
 
-	    for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
-	        for (int col = 0; col < AreaJuego.COLS; col++) {
-	            if (mapa[fila][col] == 1 || mapa[fila][col] == 2 || mapa[fila][col] == 3) {
-	                Rectangle rectMuro = new Rectangle(
-	                    col  * AreaJuego.ANCHO_CELDA,
-	                    fila * AreaJuego.ALTO_CELDA - 15,
-	                    AreaJuego.ANCHO_CELDA,
-	                    AreaJuego.ALTO_CELDA
-	                );
-	                if (rectJugador.intersects(rectMuro)) {
-	                    return true;
-	                }
-	            }
-	        }
-	    }
-	    return false;
+		for (int fila = 0; fila < AreaJuego.FILAS; fila++) {
+			for (int col = 0; col < AreaJuego.COLS; col++) {
+				if (mapa[fila][col] == 1 || mapa[fila][col] == 2 || mapa[fila][col] == 3) {
+					Rectangle rectMuro = new Rectangle(col * AreaJuego.ANCHO_CELDA, fila * AreaJuego.ALTO_CELDA - 15,
+							AreaJuego.ANCHO_CELDA,AreaJuego.ALTO_CELDA);
+					if (rectJugador.intersects(rectMuro)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public void perderVida() {
@@ -180,6 +176,13 @@ public class Jugador {
 	public void sumarPuntos(int puntos) {
 		int scoreActual = hud.getScore();
 		hud.setScore(scoreActual + puntos);
+	}
+	
+	public boolean animacionMuerteTerminada() {
+	    if (estado == MUERTO && imgActual == arrayImagenesMuerte.length - 1) {
+	        return true;
+	    }
+	    return false;
 	}
 
 	public Rectangle getRect() {
